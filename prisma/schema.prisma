@@ -1,0 +1,125 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Account {
+  id                 String  @id @default(cuid())
+  userId             String
+  type               String
+  provider           String
+  providerAccountId  String
+  refresh_token      String?
+  access_token       String?
+  expires_at         Int?
+  token_type         String?
+  scope              String?
+  id_token           String?
+  session_state      String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  progress      UserProgress[]
+  createdAt     DateTime  @default(now())
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Problem {
+  id             String   @id @default(cuid())
+  leetcodeId     String?  @unique
+  slug           String   @unique
+  title          String
+  difficulty     String   // Easy, Medium, Hard
+  url            String
+  paidOnly       Boolean  @default(false)
+  acceptanceRate Float?
+  likes          Int      @default(0)
+  dislikes       Int      @default(0)
+  frequency      Float?   @default(0)
+  updatedAt      DateTime @updatedAt
+
+  tags           Tag[]    @relation("ProblemTags")
+  progress       UserProgress[]
+  dailyChallenges DailyChallenge[]
+  categoryPopular CategoryPopular[]
+}
+
+model Tag {
+  id       String    @id @default(cuid())
+  name     String    @unique
+  problems Problem[] @relation("ProblemTags")
+}
+
+model UserProgress {
+  id            String    @id @default(cuid())
+  userId        String
+  problemId     String
+  status        String    @default("todo") // todo, attempted, solved
+  lastAttemptAt DateTime? @default(now())
+  solvedAt      DateTime?
+  attemptsCount Int       @default(0)
+  notes         String?
+  timeSpent     Int?      // in seconds
+
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problem       Problem   @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, problemId])
+  @@index([userId])
+  @@index([problemId])
+}
+
+model DailyChallenge {
+  id        String   @id @default(cuid())
+  date      DateTime @unique // Store as 00:00:00 of the day
+  problemId String
+  problem   Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@index([date])
+}
+
+model CategoryPopular {
+  id          String   @id @default(cuid())
+  category    String
+  problemId   String
+  score       Float
+  generatedAt DateTime @default(now())
+
+  problem     Problem  @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([category, problemId])
+  @@index([category])
+}
