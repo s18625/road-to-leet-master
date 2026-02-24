@@ -12,7 +12,7 @@ declare module "next-auth" {
 }
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma) as any, // PrismaAdapter type can be finicky with different versions
+  adapter: PrismaAdapter(prisma) as NextAuthOptions['adapter'], // PrismaAdapter type can be finicky with different versions
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || "",

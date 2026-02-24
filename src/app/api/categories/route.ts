@@ -8,6 +8,7 @@ export async function GET() {
     });
     return NextResponse.json(tags);
   } catch (error) {
+    console.error("Error fetching categories:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

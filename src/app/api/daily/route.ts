@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getDailyChallenge } from "@/lib/daily-logic";
 
 export async function GET() {

@@ -69,3 +69,47 @@ A web application to track LeetCode problems, daily challenges, and user statist
 - `GET /api/categories/:tag/popular`: Get most popular problems for a tag.
 - `GET /api/me/stats`: Get current user statistics.
 - `POST /api/me/progress`: Update user progress for a problem.
+- `GET /api/health`: Healthcheck endpoint.
+
+## Deployment
+
+The recommended deployment stack is **Vercel** + **Neon (Postgres)**.
+
+### Step 1: Database Setup (Neon)
+1. Create a project on [Neon](https://neon.tech/).
+2. Copy the connection string (PostgreSQL).
+3. Ensure it includes `sslmode=require`.
+
+### Step 2: Authentication (Google)
+1. Go to [Google Cloud Console](https://console.cloud.google.com/).
+2. Create OAuth 2.0 credentials.
+3. Add `https://your-domain.vercel.app/api/auth/callback/google` to authorized redirect URIs.
+
+### Step 3: Deploy to Vercel
+1. Push your code to GitHub.
+2. Import the repository in Vercel.
+3. Configure environment variables (see below).
+4. Build settings: Standard Next.js defaults. Vercel will automatically run `prisma generate` if `prisma` is in `dependencies`.
+
+### Environment Variables
+| Variable | Description | Example |
+| :--- | :--- | :--- |
+| `DATABASE_URL` | Neon/Postgres connection string | `postgresql://user:pass@host/db?sslmode=require` |
+| `NEXTAUTH_SECRET` | Secret for session encryption | `openssl rand -base64 32` |
+| `NEXTAUTH_URL` | Base URL of your app | `https://your-app.vercel.app` |
+| `GOOGLE_CLIENT_ID` | Google OAuth Client ID | `xxx.apps.googleusercontent.com` |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth Client Secret | `GOCSPX-xxx` |
+| `CRON_SECRET` | Secret for cron job endpoints | Random string |
+
+### Step 4: Database Migrations
+Run the initial migration on the production database:
+```bash
+DATABASE_URL="your_production_url" npx prisma migrate deploy
+```
+
+### Step 5: Cron Jobs
+The application uses Vercel Cron Jobs (configured in `vercel.json`). They call:
+- `/api/cron/sync`: Syncs problems from LeetCode (Daily at 00:00).
+- `/api/cron/popularity`: Recalculates trending problems (Every 12 hours).
+
+Ensure `CRON_SECRET` is set in Vercel and matched in your request header if calling manually (`Authorization: Bearer <secret>`).
