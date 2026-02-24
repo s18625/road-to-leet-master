@@ -6,7 +6,7 @@
     },
     {
       "path": "/api/cron/popularity",
-      "schedule": "0 */12 * * *"
+      "schedule": "30 0 * * *"
     }
   ]
 }
