@@ -11,7 +11,7 @@ A web application to track LeetCode problems, daily challenges, and user statist
 - **Google Auth**: Secure login via NextAuth and Google OAuth 2.0.
 
 ## Tech Stack
-
+ 
 - **Framework**: Next.js (App Router)
 - **Database**: Prisma with SQLite
 - **Auth**: NextAuth.js
