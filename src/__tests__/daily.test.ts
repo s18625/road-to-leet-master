@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { startOfDay } from 'date-fns';
 
 // Helper function that mimics the hashing in daily-logic.ts
 function getHash(dateStr: string) {

@@ -12,7 +12,7 @@ export default async function DashboardPage() {
     redirect("/login");
   }
 
-  const userId = (session.user as any).id;
+  const userId = session.user.id;
   const daily = await getDailyChallenge();
   const stats = await getUserStats(userId);
 

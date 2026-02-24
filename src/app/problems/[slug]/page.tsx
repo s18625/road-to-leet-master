@@ -30,7 +30,7 @@ export default async function ProblemDetailPage({
     userProgress = await prisma.userProgress.findUnique({
       where: {
         userId_problemId: {
-          userId: (session.user as any).id,
+          userId: session.user.id,
           problemId: problem.id,
         },
       },

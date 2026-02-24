@@ -9,7 +9,7 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const userId = (session.user as any).id;
+  const userId = session.user.id;
 
   try {
     const user = await prisma.user.findUnique({
@@ -24,6 +24,7 @@ export async function GET() {
     });
     return NextResponse.json(user);
   } catch (error) {
+    console.error("Error fetching user data:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
